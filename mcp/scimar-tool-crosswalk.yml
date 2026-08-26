@@ -1,0 +1,43 @@
+generated: '2026-08-26'
+method: derived
+source: mcp/scimar-mcp.yml + openapi/scimar-content-openapi.yml
+summary: >-
+  Scimar has both an MCP surface and a REST surface, so a crosswalk is emitted — but it is almost
+  entirely a record of what could NOT be bound. The MCP tool set is authentication-gated on both
+  endpoints and the backing wp-abilities registry is gated too, so there are no tool names to bind to
+  the 88 derived WordPress REST operations. Nothing is mapped by guesswork.
+surfaces:
+  openapi:
+    file: openapi/scimar-content-openapi.yml
+    base: https://scimar.ca/wp-json
+    operations: 88
+    gated: partial
+    note: >-
+      Anonymous GET works on /wp/v2/posts, /wp/v2/pages, /wp/v2/media, /wp/v2/search, /wp/v2/categories,
+      /wp/v2/tags, /wp/v2/types, /wp/v2/statuses and /wp/v2/taxonomies. /wp/v2/settings returns 401,
+      /wp/v2/users 302-redirects, and every write operation requires an Application Password.
+  graphql:
+    endpoint: null
+    note: 'Probed https://scimar.ca/graphql — HTTP 404. No GraphQL surface.'
+  mcp:
+    endpoints:
+    - https://scimar.ca/wp-json/mcp/mcp-oauth-server
+    - https://scimar.ca/wp-json/mcp/mcp-adapter-default-server
+    gated: true
+    note: 'Anonymous tools/list returns HTTP 401 on both endpoints.'
+crosswalk: []
+mcp_only: []
+rest_only: []
+coverage:
+  mcp_tools_known: 0
+  rest_operations: 88
+  bound: 0
+  unbound_rest: 88
+  unbound_reason: >-
+    The MCP tool set is unknown, not empty. With no anonymous tools/list and no published tool
+    inventory, binding any REST operation to a tool would be fabrication.
+next_step: >-
+  An authenticated tools/list against https://scimar.ca/wp-json/mcp/mcp-oauth-server (OAuth
+  authorization_code + PKCE, scope "mcp") or against the default adapter server with a WordPress
+  Application Password would yield the real tool set with inputSchema, at which point every tool can be
+  bound to its backing wp/v2 operationId in this file.

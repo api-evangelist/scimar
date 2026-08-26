@@ -1,0 +1,158 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  openapi/scimar-content-openapi.yml (derived from https://scimar.ca/wp-json/, 363 routes across 12
+  namespaces) plus live response headers observed on GET /wp-json/wp/v2/posts?per_page=1 on 2026-08-26
+api: scimar:content
+authentication:
+  anonymous_read: true
+  scheme: WordPress Application Passwords over HTTP Basic
+  authorization_endpoint: https://scimar.ca/wp-admin/authorize-application.php
+  browser_scheme: logged-in cookie + X-WP-Nonce header
+  mcp_scheme: >-
+    OAuth 2.1 authorization_code + PKCE (S256), scope "mcp", public clients, per
+    /.well-known/oauth-authorization-server — applies to the MCP endpoints only, not to wp/v2
+  artifact: authentication/scimar-authentication.yml
+idempotency:
+  supported: false
+  note: >-
+    No idempotency key header or parameter appears on any of the 363 routes in the discovery document,
+    and none is documented. No Idempotency pointer is wired in apis.yml — Scimar has no idempotency
+    contract to advertise, and asserting one would be fabrication.
+pagination:
+  style: page-number
+  request_params:
+  - {name: page, type: integer, default: 1, minimum: 1}
+  - {name: per_page, type: integer, default: 10, minimum: 1, maximum: 100}
+  - {name: offset, type: integer, note: available on collection routes}
+  response_headers:
+  - {name: X-WP-Total, meaning: total items in the collection}
+  - {name: X-WP-TotalPages, meaning: total pages at the current per_page}
+  link_header: 'RFC 8288 Link header with rel="next" / rel="prev"'
+  observed: 'GET /wp/v2/posts?per_page=1 -> X-WP-Total: 46, X-WP-TotalPages: 46, Link: <...page=2>; rel="next"'
+  cors_exposure: 'Access-Control-Expose-Headers: X-WP-Total, X-WP-TotalPages, Link'
+field_selection:
+  sparse_fields:
+    param: _fields
+    note: comma-separated list of top-level fields to return
+  expansion:
+    param: _embed
+    note: >-
+      Inlines linked resources (author, wp:featuredmedia, wp:term, replies) into _embedded, driven by
+      the _links relations each resource carries — observed relations on a post: self, collection,
+      about, author, replies, version-history, predecessor-version, wp:featuredmedia, wp:attachment,
+      wp:term, curies.
+  context:
+    param: context
+    values: [view, embed, edit]
+    default: view
+    note: edit context requires authentication
+ordering_and_filtering:
+  params: [search, order, orderby, slug, status, after, before, modified_after, modified_before,
+    include, exclude, categories, categories_exclude, tags, tags_exclude, author, author_exclude,
+    parent, menu_order, sticky]
+  note: taken verbatim from the route args in the discovery document
+metadata:
+  field: meta
+  note: >-
+    Registered post meta. Sampled post payloads also carry an `acf` object (Advanced Custom Fields)
+    and a family of `aioseo_*` fields (aioseo_head, aioseo_head_json, aioseo_meta_data,
+    aioseo_breadcrumb, aioseo_breadcrumb_json, aioseo_notices) injected by All in One SEO. These are
+    plugin-added and are not part of the WordPress core resource schema.
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id or correlation header is emitted. The origin is LiteSpeed (PHP 8.5.9) and returns
+    x-litespeed-cache-control, which is a cache directive, not an application request id.
+versioning:
+  scheme: uri-path-namespace
+  current: wp/v2
+  namespaces_present:
+  - wp/v2
+  - wp-site-health/v1
+  - wp-block-editor/v1
+  - wp-abilities/v1
+  - mcp
+  - oembed/1.0
+  - aioseo/v1
+  - litespeed/v1
+  - litespeed/v3
+  - userfeedback/v1
+  - google-site-kit/v1
+  - wpforms/v1
+  note: >-
+    The namespace version tracks WordPress core and the installed plugins. Scimar versions no API of
+    its own.
+error_envelope:
+  shape: '{code, message, data.status}'
+  content_type: application/json
+  rfc9457: false
+  artifact: errors/scimar-problem-types.yml
+rate_limit_signaling:
+  headers: []
+  status_on_exhaustion: null
+  note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header was observed on an anonymous GET, and no limit
+    is documented. See rate-limits/scimar-rate-limits.yml.
+caching:
+  observed: 'Cache-Control: no-cache, must-revalidate, max-age=0, no-store, private on wp-json responses'
+  note: The REST surface is served uncached by LiteSpeed even though the HTML site is cached.
+reversibility:
+  grade: documented
+  applies_to: write surface (authenticated only)
+  anonymous_write: false
+  note: >-
+    The anonymous surface is read-only, so for an unauthenticated agent reversibility is `na`. For an
+    authenticated caller the WordPress write surface DOES carry real reversal paths, and they are
+    present as operations in the derived OpenAPI — but Scimar publishes no documentation of its own, so
+    no retention window is stated by the provider. Graded `documented`, not `verified`, for exactly
+    that reason: the reversal operation exists and is named below; the window it works inside is not
+    stated by Scimar anywhere, and inventing one would be the single most expensive error in this file.
+  reversals:
+  - action: delete a post
+    operation: deletePostsById
+    reversal: >-
+      DELETE without force=true moves the post to Trash rather than destroying it; the record can be
+      restored by updating its status. force=true bypasses Trash and is irreversible.
+    parameter: force (boolean, default false)
+    window_stated: false
+    window_note: >-
+      WordPress core defaults to purging Trash after 30 days (EMPTY_TRASH_DAYS), but that is a
+      WordPress default, NOT a window Scimar states. Treat the window as unknown.
+  - action: delete a page
+    operation: deletePagesById
+    reversal: same Trash semantics as posts; force=true is irreversible
+    parameter: force (boolean, default false)
+    window_stated: false
+  - action: edit a post or page
+    operation: updatePostsById / updatePagesById
+    reversal: >-
+      Prior content is retained as revisions and is readable at
+      /wp/v2/posts/{parent}/revisions (getPostsByParentRevisions) and
+      /wp/v2/pages/{parent}/revisions (getPagesByParentRevisions); a revision can be re-applied by
+      writing its content back through the update operation.
+    window_stated: false
+  - action: delete media
+    operation: deleteMediaById
+    reversal: none — WordPress attachments do not go to Trash; deletion is immediate and permanent
+    window_stated: false
+    irreversible: true
+  - action: delete a comment
+    operation: deleteCommentsById
+    reversal: DELETE without force=true moves the comment to Trash; force=true is permanent
+    parameter: force (boolean, default false)
+    window_stated: false
+  - action: revoke an application password
+    operation: deleteUsersByUserIdApplicationPasswordsByUuid
+    reversal: none — a revoked application password cannot be restored, only reissued
+    window_stated: false
+    irreversible: true
+dry_run_mode:
+  supported: false
+  note: No preview, validate-only or dry-run parameter exists on any write route.
+cross_links:
+  errors: errors/scimar-problem-types.yml
+  lifecycle: lifecycle/scimar-lifecycle.yml
+  authentication: authentication/scimar-authentication.yml
+  rate_limits: rate-limits/scimar-rate-limits.yml
+  data_model: data-model/scimar-data-model.yml

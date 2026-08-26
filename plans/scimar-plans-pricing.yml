@@ -1,0 +1,19 @@
+generated: '2026-08-26'
+method: searched
+source: https://scimar.ca/ (full site walk of the 19 published pages) + https://scimar.ca/pricing/ (404)
+plan_count: 0
+plans: []
+note: >-
+  Scimar publishes no plans, tiers or pricing of any kind — not for an API, and not for a product.
+  https://scimar.ca/pricing/ returns 404, and none of the 19 pages enumerated from
+  /wp-json/wp/v2/pages is a pricing page. This is expected rather than a gap: Scimar is a
+  pre-commercial life-sciences company whose pipeline (SciMar NuPa Test in Phase 2, NuPa Renew
+  preparing for Phase 2B, NuPa Daily, Hepatalin-S) is not yet on sale, and the only API surface on the
+  domain is the WordPress CMS REST API and MCP Adapter, which are free to read anonymously and carry
+  no commercial terms. The nearest commercial surfaces the company does publish are an investment page
+  (https://scimar.ca/invest/) and a raise history (https://scimar.ca/raise-history/) aimed at
+  shareholders, not at API consumers.
+evidence:
+- {url: 'https://scimar.ca/pricing/', status: 404}
+- {url: 'https://scimar.ca/wp-json/wp/v2/pages?per_page=100', status: 200, finding: '19 pages, none a pricing or plans page'}
+- {url: 'https://scimar.ca/invest/', status: 200, finding: 'investor page, not API plans'}

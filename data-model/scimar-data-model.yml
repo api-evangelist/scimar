@@ -1,0 +1,125 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  openapi/scimar-content-openapi.yml plus a sampled GET /wp-json/wp/v2/posts?per_page=1 payload
+  observed on 2026-08-26
+api: scimar:content
+note: >-
+  The WordPress REST API expresses relationships as integer id fields on each resource and as HAL-style
+  `_links` relations, not as JSON Schema $refs — the route args declare request shapes only, not
+  response schemas. The graph below is read from those id fields and from the `_links` relations
+  actually present on a live scimar.ca post. Nothing is inferred from a different WordPress site.
+identifiers:
+  scheme: integer
+  note: >-
+    Every core resource is keyed by a positive integer `id`. There are no prefixed or namespaced ids.
+    Slugs (`slug`) are unique per post type and are the stable human handle used in URLs.
+entities:
+- name: Post
+  rest_base: posts
+  operations: [getPosts, getPostsById, createPosts, updatePostsById, deletePostsById]
+  fields_observed: [id, date, date_gmt, guid, modified, modified_gmt, slug, status, type, link, title,
+    content, excerpt, author, featured_media, comment_status, ping_status, sticky, template, format,
+    meta, categories, tags, class_list, acf, aioseo_head, aioseo_head_json, aioseo_meta_data,
+    aioseo_breadcrumb, aioseo_breadcrumb_json, aioseo_notices]
+  count_observed: 46
+  note: 'Scimar news stories. Sub-resources: revisions and autosaves.'
+- name: Page
+  rest_base: pages
+  operations: [getPages, getPagesById, createPages, updatePagesById, deletePagesById]
+  count_observed: 19
+  note: >-
+    The marketing and science surface — About, Science & Products, The Science, Product Pipeline, Team,
+    Community, News, Videos, Media, Testimonials, Legal, Privacy, Accessibility, Contact, Raise History.
+- name: Media
+  rest_base: media
+  operations: [getMedia, getMediaById, createMedia, updateMediaById, deleteMediaById, createMediaByIdEdit,
+    createMediaByIdPostProcess]
+  note: The attachment library — logos, brand asset archives, podcast and campaign artwork.
+- name: Comment
+  rest_base: comments
+  operations: [getComments, getCommentsById, createComments, updateCommentsById, deleteCommentsById]
+- name: Category
+  rest_base: categories
+  taxonomy: category
+  operations: [getCategories, getCategoriesById, createCategories, updateCategoriesById, deleteCategoriesById]
+- name: Tag
+  rest_base: tags
+  taxonomy: post_tag
+  operations: [getTags, getTagsById, createTags, updateTagsById, deleteTagsById]
+- name: User
+  rest_base: users
+  operations: [getUsers, getUsersById, getUsersMe]
+  access: gated
+  note: Anonymous GET /wp/v2/users 302-redirects rather than returning JSON.
+- name: ApplicationPassword
+  rest_base: users/{user_id}/application-passwords
+  operations: [getUsersByUserIdApplicationPasswords, createUsersByUserIdApplicationPasswords,
+    deleteUsersByUserIdApplicationPasswordsByUuid, getUsersByUserIdApplicationPasswordsIntrospect]
+  access: gated
+  note: The credential surface behind the http/basic securityScheme. Keyed by uuid, not integer id.
+- name: Revision
+  rest_base: posts/{parent}/revisions
+  operations: [getPostsByParentRevisions, getPostsByParentRevisionsById, getPagesByParentRevisions,
+    getPagesByParentRevisionsById]
+  note: The reversal surface for content edits — see conventions/scimar-conventions.yml reversibility.
+- name: Autosave
+  rest_base: posts/{id}/autosaves
+  operations: [getPostsByIdAutosaves, createPostsByIdAutosaves, getPostsByParentAutosavesById]
+- name: Type
+  rest_base: types
+  operations: [getTypes, getTypesByType]
+  note: >-
+    Discovery. scimar.ca registers NO custom post types — the 11 types returned are all WordPress core
+    or block-editor internals (post, page, attachment, nav_menu_item, wp_block, wp_template,
+    wp_template_part, wp_global_styles, wp_navigation, wp_font_family, wp_font_face). The team and
+    member-category surfaces that appear in the sitemap and llms.txt are NOT exposed through wp/v2.
+- name: Status
+  rest_base: statuses
+  operations: [getStatuses, getStatusesByStatus]
+- name: Taxonomy
+  rest_base: taxonomies
+  operations: [getTaxonomies, getTaxonomiesByTaxonomy]
+- name: Settings
+  rest_base: settings
+  operations: [getSettings, updateSettings, patchSettings]
+  access: gated
+  note: 'Anonymous GET returns 401 rest_forbidden.'
+- name: SearchResult
+  rest_base: search
+  operations: [getSearch]
+  note: Read-only projection across posts and pages; returns id, title, url, type, subtype.
+relationships:
+- {from: Post, to: User, kind: belongs_to, via: author, link_rel: author}
+- {from: Post, to: Media, kind: has_one, via: featured_media, link_rel: 'wp:featuredmedia'}
+- {from: Post, to: Category, kind: has_many, via: categories, link_rel: 'wp:term'}
+- {from: Post, to: Tag, kind: has_many, via: tags, link_rel: 'wp:term'}
+- {from: Post, to: Comment, kind: has_many, via: post (on Comment), link_rel: replies}
+- {from: Post, to: Revision, kind: has_many, via: parent, link_rel: version-history}
+- {from: Post, to: Revision, kind: has_one, via: parent, link_rel: predecessor-version}
+- {from: Post, to: Media, kind: has_many, via: parent (on Media), link_rel: 'wp:attachment'}
+- {from: Page, to: Page, kind: belongs_to, via: parent}
+- {from: Page, to: User, kind: belongs_to, via: author}
+- {from: Page, to: Media, kind: has_one, via: featured_media}
+- {from: Page, to: Revision, kind: has_many, via: parent}
+- {from: Comment, to: Post, kind: belongs_to, via: post}
+- {from: Comment, to: Comment, kind: belongs_to, via: parent}
+- {from: Comment, to: User, kind: belongs_to, via: author}
+- {from: Media, to: Post, kind: belongs_to, via: post}
+- {from: Media, to: User, kind: belongs_to, via: author}
+- {from: Category, to: Category, kind: belongs_to, via: parent}
+- {from: ApplicationPassword, to: User, kind: belongs_to, via: user_id}
+link_relations_observed:
+- self
+- collection
+- about
+- author
+- replies
+- version-history
+- predecessor-version
+- 'wp:featuredmedia'
+- 'wp:attachment'
+- 'wp:term'
+- curies
+render: null
+render_note: No subway/ diagram exists for this repo.

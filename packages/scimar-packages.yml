@@ -1,0 +1,50 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  registry.npmjs.org search, pypi.org/pypi/scimar/json, rubygems.org/api/v1/gems/scimar.json,
+  crates.io/api/v1/crates/scimar, azuresearch-usnc.nuget.org query, search.maven.org solrsearch,
+  packagist.org/search.json, github.com/scimar
+summary: >-
+  Scimar publishes no client libraries, SDKs or CLIs in any public package registry. Every registry
+  below was queried unauthenticated on 2026-08-26 and returned no first-party package. This is the
+  expected result for a company with no developer program: the only API surface on scimar.ca is the
+  WordPress REST API and MCP Adapter that the CMS provides, and WordPress clients are generic.
+packages: []
+package_count: 0
+official_count: 0
+registries_checked:
+- registry: npm
+  query: https://registry.npmjs.org/-/v1/search?text=scimar
+  status: 200
+  result: 0 objects
+- registry: pypi
+  query: https://pypi.org/pypi/scimar/json
+  status: 404
+  result: not found
+- registry: rubygems
+  query: https://rubygems.org/api/v1/gems/scimar.json
+  status: 404
+  result: not found
+- registry: crates.io
+  query: https://crates.io/api/v1/crates/scimar
+  status: 404
+  result: crate does not exist
+- registry: nuget
+  query: https://azuresearch-usnc.nuget.org/query?q=scimar
+  status: 200
+  result: totalHits 0
+- registry: maven-central
+  query: https://search.maven.org/solrsearch/select?q=scimar
+  status: 200
+  result: no first-party artifact
+- registry: packagist
+  query: https://packagist.org/search.json?q=scimar
+  status: 200
+  result: no first-party package
+source_code:
+  github_org: null
+  note: >-
+    github.com/scimar resolves (HTTP 200) but is NOT this company — it is the personal account of an
+    individual developer, Marcela Ramirez, with 26 educational repositories. github.com/scimarltd and
+    github.com/scimar-ca both 404. No GitHubOrganization pointer is emitted, deliberately: crediting
+    Scimar with a namesake stranger's account is exactly the misattribution this pipeline forbids.

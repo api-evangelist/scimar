@@ -1,0 +1,70 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Scimar Content API
+  version: 1.0.0
+extends: openapi/scimar-content-openapi.yml
+x-generated: '2026-08-26'
+x-method: generated
+x-source: >-
+  API Evangelist enrichment pipeline. Captures our annotations on top of the DERIVED OpenAPI so the
+  derived document stays a faithful projection of https://scimar.ca/wp-json/ and our editorial layer
+  stays separable from it.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-profile: https://apis.io/providers/scimar/
+    x-apievangelist-artifacts:
+      authentication: authentication/scimar-authentication.yml
+      conventions: conventions/scimar-conventions.yml
+      errors: errors/scimar-problem-types.yml
+      data_model: data-model/scimar-data-model.yml
+      lifecycle: lifecycle/scimar-lifecycle.yml
+      conformance: conformance/scimar-conformance.yml
+      well_known: well-known/scimar-well-known.yml
+      mcp: mcp/scimar-mcp.yml
+      skills: skills/_index.yml
+    x-provider-published: false
+    x-derivation-note: >-
+      Scimar publishes no OpenAPI, no developer portal and no API documentation. This document was
+      derived mechanically from the site's live WordPress REST route-discovery document and describes
+      the CMS content API, not a Scimar product API.
+- target: $.info
+  update:
+    x-rate-limit-note: >-
+      No rate-limit headers are advertised and none were observed on an anonymous GET. Origin limits
+      may apply without being signalled. See rate-limits/scimar-rate-limits.yml.
+    x-caching-note: >-
+      REST responses are served uncached — 'cache-control: no-cache, must-revalidate, max-age=0,
+      no-store, private' — even though the HTML site is served through LiteSpeed cache.
+    x-reversibility-note: >-
+      The anonymous surface is read-only. For an authenticated caller, DELETE on posts, pages and
+      comments moves the record to Trash unless force=true; media deletion and application-password
+      revocation are irreversible. No retention window is stated by Scimar. See
+      conventions/scimar-conventions.yml.
+- target: $.servers[0]
+  update:
+    x-observed-tls: TLSv1.3
+    x-observed-origin: LiteSpeed
+    x-observed-php: PHP/8.5.9
+    x-observed-hsts-max-age: 63072000
+- target: $.paths['/wp/v2/settings'].get
+  update:
+    x-observed-anonymous-status: 401
+    x-observed-note: >-
+      Anonymous GET returns 401 rest_forbidden. The route is registered and appears in the discovery
+      document, but is not readable without authentication.
+- target: $.paths['/wp/v2/users'].get
+  update:
+    x-observed-anonymous-status: 302
+    x-observed-note: >-
+      Anonymous GET does NOT return a JSON error — it 302-redirects, so a client following redirects
+      receives HTML rather than the WordPress error envelope. Check Content-Type, not just status.
+- target: $.paths['/wp/v2/posts'].get
+  update:
+    x-observed-total: 46
+    x-observed-note: >-
+      X-WP-Total 46 on 2026-08-26. The newest sitemap lastmod for posts is 2023-11-02, so this
+      corpus is static rather than actively updated.
+- target: $.paths['/wp/v2/pages'].get
+  update:
+    x-observed-total: 19

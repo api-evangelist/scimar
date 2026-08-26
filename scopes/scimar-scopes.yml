@@ -1,0 +1,51 @@
+generated: '2026-08-26'
+method: probed
+source: https://scimar.ca/.well-known/oauth-authorization-server + https://scimar.ca/.well-known/oauth-protected-resource
+docs: null
+applies_to: scimar:mcp
+note: >-
+  The OpenAPI derived for the wp/v2 content surface declares no oauth2 securityScheme — that surface
+  uses WordPress Application Passwords over HTTP Basic and has no scope model. The OAuth surface on
+  this domain belongs to the WordPress MCP Adapter, and its scope inventory is published, machine
+  readable and anonymous: both RFC 8414 and RFC 9728 metadata documents return 200 and both declare
+  the same single scope. That is the whole scope surface — one scope, taken verbatim from the
+  provider's own documents. Nothing is expanded, split or inferred.
+authorization_server:
+  issuer: https://scimar.ca
+  authorization_endpoint: https://scimar.ca/oauth/authorize
+  token_endpoint: https://scimar.ca/oauth/token
+  revocation_endpoint: https://scimar.ca/oauth/revoke
+  grant_types_supported: [authorization_code, refresh_token]
+  response_types_supported: [code]
+  code_challenge_methods_supported: [S256]
+  token_endpoint_auth_methods_supported: [none]
+  client_id_metadata_document_supported: true
+  authorization_response_iss_parameter_supported: true
+protected_resource:
+  resource: https://scimar.ca/wp-json/mcp/mcp-oauth-server
+  authorization_servers: [https://scimar.ca]
+  bearer_methods_supported: [header]
+scope_count: 1
+scopes:
+- name: mcp
+  description: >-
+    The only scope advertised. Declared in scopes_supported of both the authorization-server metadata
+    and the protected-resource metadata. Scimar publishes no scope reference page and no description
+    of what the scope grants, so its effective permissions are unknown — the WordPress MCP Adapter
+    projects the site's registered wp-abilities as tools, and the abilities registry is itself gated
+    (GET /wp-json/wp-abilities/v1/abilities -> 401), so the grant cannot be enumerated anonymously.
+  grants: unknown
+  source: /.well-known/oauth-authorization-server
+  read_write: unknown
+gaps:
+- >-
+  No scope reference or permissions documentation exists anywhere on scimar.ca. A single coarse "mcp"
+  scope is all the authorization surface an integrator can see, and it is not decomposed by capability
+  or by read-versus-write.
+- >-
+  token_endpoint_auth_methods_supported is ["none"], i.e. public clients only, with PKCE S256 required.
+  There is no client-secret path.
+evidence:
+- {url: 'https://scimar.ca/.well-known/oauth-authorization-server', status: 200}
+- {url: 'https://scimar.ca/.well-known/oauth-protected-resource', status: 200}
+- {url: 'https://scimar.ca/wp-json/wp-abilities/v1/abilities', status: 401}

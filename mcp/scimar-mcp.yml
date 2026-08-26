@@ -1,0 +1,116 @@
+generated: '2026-08-26'
+method: probed
+status: published
+source: https://scimar.ca/wp-json/mcp
+summary: >-
+  scimar.ca runs the WordPress MCP Adapter. The "mcp" namespace is registered in the site's WordPress
+  REST route index alongside wp-abilities/v1 (the adapter's backing ability registry) and exposes TWO
+  Model Context Protocol server endpoints. Both are live and both are authentication-gated, so the
+  published tool set could not be enumerated anonymously. This is the site CMS's MCP surface, not a
+  Scimar product MCP server: Scimar publishes no developer platform and advertises these endpoints in
+  no documentation; they were found by enumerating https://scimar.ca/wp-json/.
+servers:
+- name: mcp-oauth-server
+  transport: http
+  url: https://scimar.ca/wp-json/mcp/mcp-oauth-server
+  methods:
+  - POST
+  - GET
+  - DELETE
+  auth: oauth
+  probe:
+    request: 'JSON-RPC {"jsonrpc":"2.0","id":1,"method":"tools/list"} with Accept: application/json, text/event-stream'
+    http_status: 401
+    body: '{"code":"mcp_unauthorized","message":"MCP authentication required.","data":{"status":401}}'
+    www_authenticate: >-
+      Bearer realm="https://scimar.ca", resource_metadata="https://scimar.ca/.well-known/oauth-protected-resource"
+    note: >-
+      This is a correct RFC 9728 challenge — the 401 names the protected-resource metadata document, which
+      resolves anonymously and points back at the RFC 8414 authorization-server metadata. That is a better
+      OAuth discovery posture than most WordPress MCP Adapter installs, which serve neither document.
+- name: mcp-adapter-default-server
+  transport: http
+  url: https://scimar.ca/wp-json/mcp/mcp-adapter-default-server
+  methods:
+  - POST
+  - GET
+  - DELETE
+  auth: unknown
+  probe:
+    request: 'JSON-RPC {"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    http_status: 401
+    body: '{"code":"rest_forbidden","message":"Sorry, you are not allowed to do that.","data":{"status":401}}'
+    note: >-
+      Gated by the ordinary WordPress REST permission check rather than the OAuth challenge, so this
+      endpoint expects a logged-in cookie + X-WP-Nonce or an Application Password.
+namespace_index:
+  url: https://scimar.ca/wp-json/mcp
+  status: 200
+  routes:
+  - /mcp
+  - /mcp/mcp-oauth-server
+  - /mcp/mcp-adapter-default-server
+oauth:
+  authorization_server_metadata: https://scimar.ca/.well-known/oauth-authorization-server
+  authorization_server_metadata_status: 200
+  protected_resource_metadata: https://scimar.ca/.well-known/oauth-protected-resource
+  protected_resource_metadata_status: 200
+  issuer: https://scimar.ca
+  authorization_endpoint: https://scimar.ca/oauth/authorize
+  token_endpoint: https://scimar.ca/oauth/token
+  revocation_endpoint: https://scimar.ca/oauth/revoke
+  grant_types_supported:
+  - authorization_code
+  - refresh_token
+  response_types_supported:
+  - code
+  code_challenge_methods_supported:
+  - S256
+  scopes_supported:
+  - mcp
+  token_endpoint_auth_methods_supported:
+  - none
+  client_id_metadata_document_supported: true
+  saved:
+  - well-known/scimar-oauth-authorization-server.json
+  - well-known/scimar-oauth-protected-resource.json
+companion_surface:
+  abilities_api: https://scimar.ca/wp-json/wp-abilities/v1/abilities
+  abilities_status: 401
+  abilities_namespace_index: https://scimar.ca/wp-json/wp-abilities/v1
+  abilities_namespace_index_status: 200
+  abilities_routes:
+  - /wp-abilities/v1/abilities
+  - /wp-abilities/v1/abilities/{name}
+  - /wp-abilities/v1/abilities/{name}/run
+  - /wp-abilities/v1/categories
+  - /wp-abilities/v1/categories/{slug}
+  note: >-
+    The WordPress Abilities API registry is what the MCP Adapter projects as tools. Its namespace index
+    is public but the abilities listing itself returns 401 rest_forbidden, so the tool set is gated the
+    same way the MCP endpoints are.
+tools: []
+tools_note: >-
+  NOT AN EMPTY TOOL SET — the tool set is unknown. tools/list is authentication-gated on both endpoints,
+  the wp-abilities registry is gated, and the published llms.txt is a page/post link index with no tool
+  list, so there is no public source for tool names or input schemas. Nothing here is derived or guessed.
+  Authenticated introspection would be required to enumerate them.
+x-evidence:
+  fetched: '2026-08-26'
+  url: https://scimar.ca/wp-json/mcp/mcp-oauth-server
+  http_status: 401
+  content_type: application/json; charset=UTF-8
+  discovery_url: https://scimar.ca/wp-json/
+  namespace_index_status: 200
+  server_header: LiteSpeed
+  php: PHP/8.5.9
+deployment:
+  mode: remote
+  endpoint: https://scimar.ca/wp-json/mcp/mcp-oauth-server
+  auth: oauth
+  verified: probed
+  probe: gated
+  checked: '2026-08-26'
+  note: >-
+    A second remote endpoint, https://scimar.ca/wp-json/mcp/mcp-adapter-default-server, is also served.
+    No stdio package is published — there is nothing to npx or pip install; this is a hosted surface only.

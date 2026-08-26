@@ -1,0 +1,83 @@
+generated: '2026-08-26'
+method: probed
+source: https://scimar.ca/wp-json/ + live probes 2026-08-26
+versioning:
+  scheme: uri-path-namespace
+  current: wp/v2
+  docs: null
+  note: >-
+    Version is carried by the WordPress REST namespace segment. Scimar does not version an API of its
+    own — the namespace version tracks WordPress core and the installed plugins.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    No deprecation or sunset policy is published, and no operation in the derived OpenAPI is marked
+    deprecated. No Deprecation pointer wired.
+sla:
+  url: null
+  uptime_target: null
+  note: No SLA, uptime commitment or support tier is published.
+status_page:
+  url: null
+  probed:
+  - {url: 'https://status.scimar.ca/', result: DNS does not resolve}
+  - {url: 'https://scimar.ca/status/', result: 404}
+  - {url: 'https://scimar.statuspage.io/', result: '200 but redirects to https://www.atlassian.com/software/statuspage — the Statuspage marketing site, not a Scimar status page'}
+  note: >-
+    No status page exists. The scimar.statuspage.io hit is a false positive, verified by following the
+    redirect, and is recorded here so a later round does not re-report it. No StatusPage pointer wired.
+changelog:
+  url: null
+  probed:
+  - {url: 'https://scimar.ca/changelog/', result: 404}
+  - {url: 'https://scimar.ca/news/', result: '200 — corporate news page, not an API changelog'}
+  note: >-
+    Scimar publishes no changelog or release notes for any API. The news page is wired as Blog / News,
+    not ChangeLog. No ChangeLog pointer wired.
+support:
+  contact_page: https://scimar.ca/about/contact/
+  developer_support: null
+  note: >-
+    A general corporate contact page only. There is no developer support channel, forum, community or
+    issue tracker for any API.
+developer_surface_probes:
+  note: >-
+    Probed 2026-08-26 for any developer-facing surface. Scimar publishes none.
+  results:
+  - {url: 'https://scimar.ca/developers/', status: 404}
+  - {url: 'https://scimar.ca/api/', status: 404}
+  - {url: 'https://scimar.ca/docs', status: 404}
+  - {url: 'https://scimar.ca/pricing/', status: 404}
+  - {url: 'https://docs.scimar.ca/', status: 'DNS does not resolve'}
+  - {url: 'https://api.scimar.ca/', status: 'DNS does not resolve'}
+  - {url: 'https://developer.scimar.ca/', status: 'DNS does not resolve'}
+  - {url: 'https://scimar.ca/openapi.json', status: 404}
+  - {url: 'https://scimar.ca/swagger.json', status: 404}
+  - {url: 'https://scimar.ca/api-docs', status: 404}
+  - {url: 'https://scimar.ca/graphql', status: 404}
+  postman:
+    wired: false
+    finding: No public Postman workspace or collection attributable to Scimar was found.
+content_freshness:
+  posts_total: 46
+  observed: 'X-WP-Total: 46 on GET /wp/v2/posts'
+  sitemap_lastmod:
+  - {sitemap: post-sitemap.xml, lastmod: '2023-11-02'}
+  - {sitemap: page-sitemap.xml, lastmod: '2024-06-19'}
+  - {sitemap: team-sitemap.xml, lastmod: '2023-10-26'}
+  note: >-
+    The content surface itself is stale — the newest sitemap lastmod is June 2024, and the news
+    archive has not been added to since late 2023. Recorded as an observation about the corpus an
+    agent would read, not as a judgement about the company.
+hosting:
+  origin: LiteSpeed
+  php: PHP/8.5.9
+  platform: >-
+    WordPress with All in One SEO, LiteSpeed Cache, UserFeedback, Google Site Kit, WPForms, the
+    WordPress Abilities API and the WordPress MCP Adapter present in the REST route index
+  tls: TLSv1.3
+  cert_expires: 'Nov  1 06:11:23 2026 GMT'
+  hsts_max_age: 63072000
+deprecated_operations: []

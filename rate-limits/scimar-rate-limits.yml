@@ -1,0 +1,30 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  Live response headers on GET https://scimar.ca/wp-json/wp/v2/posts?per_page=1 observed 2026-08-26,
+  plus a documentation search that found no developer documentation at all
+limit_count: 0
+limits: []
+response_headers: []
+status_on_exhaustion: null
+retry_after: false
+note: >-
+  No rate limit is published and none is signalled at runtime. An anonymous GET against the WordPress
+  REST API returned no RateLimit-*, X-RateLimit-* or Retry-After header — the only rate-relevant
+  headers present were X-WP-Total, X-WP-TotalPages and the RFC 8288 Link header, which are pagination
+  signals, not throttling signals. Scimar publishes no developer documentation in which a limit could
+  be stated (https://scimar.ca/developers/ and https://scimar.ca/api/ both 404), so an agent has no
+  runtime signal and no documented number. The practical ceiling is whatever the LiteSpeed origin and
+  the WordPress install enforce, which is not observable from outside and is not asserted here. An
+  honest zero.
+observed_headers_on_anonymous_get:
+- 'x-wp-total: 46'
+- 'x-wp-totalpages: 46'
+- 'link: <https://scimar.ca/wp-json/wp/v2/posts?per_page=1&page=2>; rel="next"'
+- 'access-control-expose-headers: X-WP-Total, X-WP-TotalPages, Link'
+- 'cache-control: no-cache, must-revalidate, max-age=0, no-store, private'
+- 'x-litespeed-cache-control: no-cache'
+evidence:
+- {url: 'https://scimar.ca/wp-json/wp/v2/posts?per_page=1', status: 200, finding: 'no rate-limit header of any family'}
+- {url: 'https://scimar.ca/developers/', status: 404}
+- {url: 'https://scimar.ca/api/', status: 404}

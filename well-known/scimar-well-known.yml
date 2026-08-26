@@ -1,0 +1,45 @@
+generated: '2026-08-26'
+method: probed
+source: live HTTPS probes of https://scimar.ca/.well-known/*
+note: >-
+  Two documents are really served. scimar.ca runs a WordPress MCP Adapter, and the adapter publishes an
+  RFC 8414 authorization-server metadata document and an RFC 9728 protected-resource metadata document
+  for its Model Context Protocol endpoint. Both are anonymous and return HTTP 200 JSON. Everything else
+  probed 404 with an HTML body — including /.well-known/security.txt, so no SecurityTxt pointer is
+  emitted, and /.well-known/agent-card.json and /.well-known/agent.json, so no agent card is claimed.
+hosts:
+- host: scimar.ca
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: scimar-oauth-authorization-server.json
+    note: >-
+      Served after a 301 from the canonical no-trailing-slash path to
+      https://scimar.ca/.well-known/oauth-authorization-server/. RFC 8414 authorization server
+      metadata; issuer https://scimar.ca, scopes_supported [mcp], PKCE S256, public clients
+      (token_endpoint_auth_methods_supported [none]) with client_id_metadata_document_supported true.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json
+    file: scimar-oauth-protected-resource.json
+    note: >-
+      Served after a 301 to the trailing-slash path. RFC 9728 protected resource metadata naming
+      https://scimar.ca/wp-json/mcp/mcp-oauth-server as the resource and https://scimar.ca as its
+      authorization server.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+  - path: /.well-known/dnt-policy.txt
+    status: 404

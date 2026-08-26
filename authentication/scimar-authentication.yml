@@ -1,0 +1,16 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/scimar-content-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: applicationPassword
+  type: http
+  scheme: basic
+  description: WordPress Application Passwords (HTTP Basic). The scimar.ca WordPress install
+    registers the application-passwords routes at /wp/v2/users/{user_id}/application-passwords
+    and the authorization endpoint at https://scimar.ca/wp-admin/authorize-application.php.
+    Read operations on wp/v2 are anonymous.
+  sources:
+  - openapi/scimar-content-openapi.yml
