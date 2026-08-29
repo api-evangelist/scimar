@@ -1,0 +1,27 @@
+{
+  "provider": "scimar",
+  "sources": [
+    "scimar-content-openapi.yml"
+  ],
+  "outputs": [
+    "scimar-comments-api-openapi.yml",
+    "scimar-discovery-api-openapi.yml",
+    "scimar-media-api-openapi.yml",
+    "scimar-pages-api-openapi.yml",
+    "scimar-posts-api-openapi.yml",
+    "scimar-search-api-openapi.yml",
+    "scimar-settings-api-openapi.yml",
+    "scimar-taxonomy-api-openapi.yml",
+    "scimar-users-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/scimar-content-openapi.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "scimar-content-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: written (+9 apis, 10 total)"
+  ],
+  "skipped": []
+}

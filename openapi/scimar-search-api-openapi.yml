@@ -1,0 +1,162 @@
+openapi: 3.2.0
+info:
+  title: Scimar Content API (WordPress REST wp/v2) Search API
+  version: wp/v2
+  summary: 'Public read surface of scimar.ca content: news stories, marketing and science pages, team profiles, the media library, taxonomies and site-wide search.'
+  description: 'Scimar publishes scimar.ca on WordPress, which exposes the WordPress REST API at https://scimar.ca/wp-json/. The wp/v2 namespace is anonymously readable and returns the company''s news stories, Science & Products and About pages, media library, categories, tags, taxonomies, content-type discovery and a site-wide search endpoint as JSON.
+
+
+    This document was DERIVED mechanically by API Evangelist from the route-discovery document served at https://scimar.ca/wp-json/ on 2026-08-26 — every path, method and parameter below is taken verbatim from that descriptor. Scimar does not publish an OpenAPI definition of its own, and this is not a product API: it is the content API the CMS exposes. Write operations exist on these routes but require authentication (WordPress Application Passwords over HTTP Basic); anonymous GET /wp/v2/settings returns 401 and GET /wp/v2/users 302-redirects.'
+  contact:
+    name: Scimar
+    url: https://scimar.ca/about/contact/
+  x-derived-by: API Evangelist enrichment pipeline
+  x-derived-from: https://scimar.ca/wp-json/
+  x-derived-on: '2026-08-26'
+  x-provider-published: false
+servers:
+- url: https://scimar.ca/wp-json
+  description: Production
+tags:
+- name: Search
+paths:
+  /wp/v2/search:
+    get:
+      operationId: getSearch
+      summary: GET /wp/v2/search
+      tags:
+      - Search
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - post
+          - term
+          - post-format
+          default: post
+        description: Limit results to items of an object type.
+      - name: subtype
+        in: query
+        required: false
+        schema:
+          type: array
+          default: any
+          items:
+            type: string
+        description: Limit results to items of one or more object subtypes.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    Unauthorized:
+      description: Authentication required or rejected (rest_forbidden / rest_not_logged_in).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+    NotFound:
+      description: No route or resource matched (rest_no_route / rest_post_invalid_id).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+    Forbidden:
+      description: Authenticated but not permitted (rest_cannot_view / rest_forbidden).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+    BadRequest:
+      description: Invalid parameter (rest_invalid_param).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+  schemas:
+    WpError:
+      type: object
+      description: The WordPress REST API error envelope (WP_Error serialized to JSON).
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code, e.g. rest_forbidden.
+        message:
+          type: string
+          description: Human-readable error message.
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+  securitySchemes:
+    applicationPassword:
+      type: http
+      scheme: basic
+      description: WordPress Application Passwords (HTTP Basic). The scimar.ca WordPress install registers the application-passwords routes at /wp/v2/users/{user_id}/application-passwords and the authorization endpoint at https://scimar.ca/wp-admin/authorize-application.php. Read operations on wp/v2 are anonymous.

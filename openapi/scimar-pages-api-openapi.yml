@@ -1,0 +1,1106 @@
+openapi: 3.2.0
+info:
+  title: Scimar Content API (WordPress REST wp/v2) Pages API
+  version: wp/v2
+  summary: 'Public read surface of scimar.ca content: news stories, marketing and science pages, team profiles, the media library, taxonomies and site-wide search.'
+  description: 'Scimar publishes scimar.ca on WordPress, which exposes the WordPress REST API at https://scimar.ca/wp-json/. The wp/v2 namespace is anonymously readable and returns the company''s news stories, Science & Products and About pages, media library, categories, tags, taxonomies, content-type discovery and a site-wide search endpoint as JSON.
+
+
+    This document was DERIVED mechanically by API Evangelist from the route-discovery document served at https://scimar.ca/wp-json/ on 2026-08-26 — every path, method and parameter below is taken verbatim from that descriptor. Scimar does not publish an OpenAPI definition of its own, and this is not a product API: it is the content API the CMS exposes. Write operations exist on these routes but require authentication (WordPress Application Passwords over HTTP Basic); anonymous GET /wp/v2/settings returns 401 and GET /wp/v2/users 302-redirects.'
+  contact:
+    name: Scimar
+    url: https://scimar.ca/about/contact/
+  x-derived-by: API Evangelist enrichment pipeline
+  x-derived-from: https://scimar.ca/wp-json/
+  x-derived-on: '2026-08-26'
+  x-provider-published: false
+servers:
+- url: https://scimar.ca/wp-json
+  description: Production
+tags:
+- name: Pages
+paths:
+  /wp/v2/pages:
+    get:
+      operationId: getPages
+      summary: GET /wp/v2/pages
+      tags:
+      - Pages
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published after a given ISO8601 compliant date.
+      - name: modified_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified after a given ISO8601 compliant date.
+      - name: author
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to posts assigned to specific authors.
+      - name: author_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes posts assigned to specific authors.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published before a given ISO8601 compliant date.
+      - name: modified_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified before a given ISO8601 compliant date.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: menu_order
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Limit result set to posts with a specific menu_order value.
+      - name: search_semantics
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - exact
+        description: How to interpret the search input.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - author
+          - date
+          - id
+          - include
+          - modified
+          - parent
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          - menu_order
+          default: date
+        description: Sort collection by post attribute.
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to items with particular parent IDs.
+      - name: parent_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to all items except those of a particular parent ID.
+      - name: search_columns
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: string
+        description: Array of column names to be searched.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to posts with one or more specific slugs.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default: publish
+          items:
+            type: string
+        description: Limit result set to posts assigned one or more statuses.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createPages
+      summary: POST /wp/v2/pages
+      tags:
+      - Pages
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, in the site's timezone.
+                date_gmt:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, as GMT.
+                slug:
+                  type: string
+                  description: An alphanumeric identifier for the post unique to its type.
+                status:
+                  type: string
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - acf-disabled
+                  - wp_stream_enabled
+                  - wp_stream_disabled
+                  description: A named status for the post.
+                password:
+                  type: string
+                  description: A password to protect access to the content and excerpt.
+                parent:
+                  type: integer
+                  description: The ID for the parent of the post.
+                title:
+                  type: object
+                  description: The title for the post.
+                content:
+                  type: object
+                  description: The content for the post.
+                author:
+                  type: integer
+                  description: The ID for the author of the post.
+                excerpt:
+                  type: object
+                  description: The excerpt for the post.
+                featured_media:
+                  type: integer
+                  description: The ID of the featured media for the post.
+                comment_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not comments are open on the post.
+                ping_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not the post can be pinged.
+                menu_order:
+                  type: integer
+                  description: The order of the post in relation to other posts.
+                meta:
+                  type: object
+                  description: Meta fields.
+                template:
+                  type: string
+                  description: The theme file to use to display the post.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+  /wp/v2/pages/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      operationId: getPagesById
+      summary: GET /wp/v2/pages/{id}
+      tags:
+      - Pages
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: excerpt_length
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Override the default excerpt length.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the post if it is password protected.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createPagesById
+      summary: POST /wp/v2/pages/{id}
+      tags:
+      - Pages
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, in the site's timezone.
+                date_gmt:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, as GMT.
+                slug:
+                  type: string
+                  description: An alphanumeric identifier for the post unique to its type.
+                status:
+                  type: string
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - acf-disabled
+                  - wp_stream_enabled
+                  - wp_stream_disabled
+                  description: A named status for the post.
+                password:
+                  type: string
+                  description: A password to protect access to the content and excerpt.
+                parent:
+                  type: integer
+                  description: The ID for the parent of the post.
+                title:
+                  type: object
+                  description: The title for the post.
+                content:
+                  type: object
+                  description: The content for the post.
+                author:
+                  type: integer
+                  description: The ID for the author of the post.
+                excerpt:
+                  type: object
+                  description: The excerpt for the post.
+                featured_media:
+                  type: integer
+                  description: The ID of the featured media for the post.
+                comment_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not comments are open on the post.
+                ping_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not the post can be pinged.
+                menu_order:
+                  type: integer
+                  description: The order of the post in relation to other posts.
+                meta:
+                  type: object
+                  description: Meta fields.
+                template:
+                  type: string
+                  description: The theme file to use to display the post.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+    put:
+      operationId: updatePagesById
+      summary: PUT /wp/v2/pages/{id}
+      tags:
+      - Pages
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, in the site's timezone.
+                date_gmt:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, as GMT.
+                slug:
+                  type: string
+                  description: An alphanumeric identifier for the post unique to its type.
+                status:
+                  type: string
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - acf-disabled
+                  - wp_stream_enabled
+                  - wp_stream_disabled
+                  description: A named status for the post.
+                password:
+                  type: string
+                  description: A password to protect access to the content and excerpt.
+                parent:
+                  type: integer
+                  description: The ID for the parent of the post.
+                title:
+                  type: object
+                  description: The title for the post.
+                content:
+                  type: object
+                  description: The content for the post.
+                author:
+                  type: integer
+                  description: The ID for the author of the post.
+                excerpt:
+                  type: object
+                  description: The excerpt for the post.
+                featured_media:
+                  type: integer
+                  description: The ID of the featured media for the post.
+                comment_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not comments are open on the post.
+                ping_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not the post can be pinged.
+                menu_order:
+                  type: integer
+                  description: The order of the post in relation to other posts.
+                meta:
+                  type: object
+                  description: Meta fields.
+                template:
+                  type: string
+                  description: The theme file to use to display the post.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+    patch:
+      operationId: patchPagesById
+      summary: PATCH /wp/v2/pages/{id}
+      tags:
+      - Pages
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, in the site's timezone.
+                date_gmt:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, as GMT.
+                slug:
+                  type: string
+                  description: An alphanumeric identifier for the post unique to its type.
+                status:
+                  type: string
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - acf-disabled
+                  - wp_stream_enabled
+                  - wp_stream_disabled
+                  description: A named status for the post.
+                password:
+                  type: string
+                  description: A password to protect access to the content and excerpt.
+                parent:
+                  type: integer
+                  description: The ID for the parent of the post.
+                title:
+                  type: object
+                  description: The title for the post.
+                content:
+                  type: object
+                  description: The content for the post.
+                author:
+                  type: integer
+                  description: The ID for the author of the post.
+                excerpt:
+                  type: object
+                  description: The excerpt for the post.
+                featured_media:
+                  type: integer
+                  description: The ID of the featured media for the post.
+                comment_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not comments are open on the post.
+                ping_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not the post can be pinged.
+                menu_order:
+                  type: integer
+                  description: The order of the post in relation to other posts.
+                meta:
+                  type: object
+                  description: Meta fields.
+                template:
+                  type: string
+                  description: The theme file to use to display the post.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+    delete:
+      operationId: deletePagesById
+      summary: DELETE /wp/v2/pages/{id}
+      tags:
+      - Pages
+      parameters:
+      - name: force
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Whether to bypass Trash and force deletion.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+  /wp/v2/pages/{id}/autosaves:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      operationId: getPagesByIdAutosaves
+      summary: GET /wp/v2/pages/{id}/autosaves
+      tags:
+      - Pages
+      parameters:
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: The ID for the parent of the autosave.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createPagesByIdAutosaves
+      summary: POST /wp/v2/pages/{id}/autosaves
+      tags:
+      - Pages
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parent:
+                  type: integer
+                  description: The ID for the parent of the post.
+                date:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, in the site's timezone.
+                date_gmt:
+                  type: string
+                  format: date-time
+                  description: The date the post was published, as GMT.
+                slug:
+                  type: string
+                  description: An alphanumeric identifier for the post unique to its type.
+                status:
+                  type: string
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - acf-disabled
+                  - wp_stream_enabled
+                  - wp_stream_disabled
+                  description: A named status for the post.
+                password:
+                  type: string
+                  description: A password to protect access to the content and excerpt.
+                title:
+                  type: object
+                  description: The title for the post.
+                content:
+                  type: object
+                  description: The content for the post.
+                author:
+                  type: integer
+                  description: The ID for the author of the post.
+                excerpt:
+                  type: object
+                  description: The excerpt for the post.
+                featured_media:
+                  type: integer
+                  description: The ID of the featured media for the post.
+                comment_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not comments are open on the post.
+                ping_status:
+                  type: string
+                  enum:
+                  - open
+                  - closed
+                  description: Whether or not the post can be pinged.
+                menu_order:
+                  type: integer
+                  description: The order of the post in relation to other posts.
+                meta:
+                  type: object
+                  description: Meta fields.
+                template:
+                  type: string
+                  description: The theme file to use to display the post.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+  /wp/v2/pages/{parent}/autosaves/{id}:
+    parameters:
+    - name: parent
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      operationId: getPagesByParentAutosavesById
+      summary: GET /wp/v2/pages/{parent}/autosaves/{id}
+      tags:
+      - Pages
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/pages/{parent}/revisions:
+    parameters:
+    - name: parent
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      operationId: getPagesByParentRevisions
+      summary: GET /wp/v2/pages/{parent}/revisions
+      tags:
+      - Pages
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - date
+          - id
+          - include
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          default: date
+        description: Sort collection by object attribute.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/pages/{parent}/revisions/{id}:
+    parameters:
+    - name: parent
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      operationId: getPagesByParentRevisionsById
+      summary: GET /wp/v2/pages/{parent}/revisions/{id}
+      tags:
+      - Pages
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deletePagesByParentRevisionsById
+      summary: DELETE /wp/v2/pages/{parent}/revisions/{id}
+      tags:
+      - Pages
+      parameters:
+      - name: force
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Required to be true, as revisions do not support trashing.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - applicationPassword: []
+components:
+  responses:
+    Unauthorized:
+      description: Authentication required or rejected (rest_forbidden / rest_not_logged_in).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+    NotFound:
+      description: No route or resource matched (rest_no_route / rest_post_invalid_id).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+    Forbidden:
+      description: Authenticated but not permitted (rest_cannot_view / rest_forbidden).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+    BadRequest:
+      description: Invalid parameter (rest_invalid_param).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
+  schemas:
+    WpError:
+      type: object
+      description: The WordPress REST API error envelope (WP_Error serialized to JSON).
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code, e.g. rest_forbidden.
+        message:
+          type: string
+          description: Human-readable error message.
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+  securitySchemes:
+    applicationPassword:
+      type: http
+      scheme: basic
+      description: WordPress Application Passwords (HTTP Basic). The scimar.ca WordPress install registers the application-passwords routes at /wp/v2/users/{user_id}/application-passwords and the authorization endpoint at https://scimar.ca/wp-admin/authorize-application.php. Read operations on wp/v2 are anonymous.
