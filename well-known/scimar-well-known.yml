@@ -1,12 +1,17 @@
-generated: '2026-08-26'
+generated: '2026-09-19'
 method: probed
 source: live HTTPS probes of https://scimar.ca/.well-known/*
-note: >-
-  Two documents are really served. scimar.ca runs a WordPress MCP Adapter, and the adapter publishes an
-  RFC 8414 authorization-server metadata document and an RFC 9728 protected-resource metadata document
+note: 'Two documents are really served. scimar.ca runs a WordPress MCP Adapter, and the adapter publishes
+  an RFC 8414 authorization-server metadata document and an RFC 9728 protected-resource metadata document
   for its Model Context Protocol endpoint. Both are anonymous and return HTTP 200 JSON. Everything else
-  probed 404 with an HTML body — including /.well-known/security.txt, so no SecurityTxt pointer is
-  emitted, and /.well-known/agent-card.json and /.well-known/agent.json, so no agent card is claimed.
+  probed 404 with an HTML body — including /.well-known/security.txt, so no SecurityTxt pointer is emitted,
+  and /.well-known/agent-card.json and /.well-known/agent.json, so no agent card is claimed.
+
+
+  MCP-host OAuth discovery added 2026-09-19 (roadmap#321/#337): the harvest visits a provider''s primary
+  hosts, and RFC 9728 protected-resource metadata lives on the MCP host, so these documents existed and
+  were invisible to the scorer. Fetched live and validated on `resource`/`issuer`; one negative control
+  per host.'
 hosts:
 - host: scimar.ca
   documents:
@@ -14,19 +19,16 @@ hosts:
     status: 200
     content_type: application/json
     file: scimar-oauth-authorization-server.json
-    note: >-
-      Served after a 301 from the canonical no-trailing-slash path to
-      https://scimar.ca/.well-known/oauth-authorization-server/. RFC 8414 authorization server
-      metadata; issuer https://scimar.ca, scopes_supported [mcp], PKCE S256, public clients
-      (token_endpoint_auth_methods_supported [none]) with client_id_metadata_document_supported true.
+    note: Served after a 301 from the canonical no-trailing-slash path to https://scimar.ca/.well-known/oauth-authorization-server/.
+      RFC 8414 authorization server metadata; issuer https://scimar.ca, scopes_supported [mcp], PKCE S256,
+      public clients (token_endpoint_auth_methods_supported [none]) with client_id_metadata_document_supported
+      true.
   - path: /.well-known/oauth-protected-resource
     status: 200
     content_type: application/json
     file: scimar-oauth-protected-resource.json
-    note: >-
-      Served after a 301 to the trailing-slash path. RFC 9728 protected resource metadata naming
-      https://scimar.ca/wp-json/mcp/mcp-oauth-server as the resource and https://scimar.ca as its
-      authorization server.
+    note: Served after a 301 to the trailing-slash path. RFC 9728 protected resource metadata naming https://scimar.ca/wp-json/mcp/mcp-oauth-server
+      as the resource and https://scimar.ca as its authorization server.
   - path: /.well-known/security.txt
     status: 404
   - path: /.well-known/openid-configuration
@@ -43,3 +45,24 @@ hosts:
     status: 404
   - path: /.well-known/dnt-policy.txt
     status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: scimar-scimar-oauth-protected-resource.json
+    bytes: 179
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: scimar-scimar-oauth-authorization-server.json
+    bytes: 527
+  path_echo_control: passed
+x-mcp-probe:
+  probed: '2026-09-19'
+  issue: roadmap#321, roadmap#337
+  documents:
+  - host: https://scimar.ca
+    path: /.well-known/oauth-protected-resource
+    file: scimar-scimar-oauth-protected-resource.json
+  - host: https://scimar.ca
+    path: /.well-known/oauth-authorization-server
+    file: scimar-scimar-oauth-authorization-server.json
+  validated_on: resource (RFC 9728) / issuer (RFC 8414, OIDC)
+  negative_control: one per host; a 2xx JSON object at an impossible path discards the host

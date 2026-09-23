@@ -3,10 +3,7 @@ info:
   title: Scimar Content API (WordPress REST wp/v2) Settings API
   version: wp/v2
   summary: 'Public read surface of scimar.ca content: news stories, marketing and science pages, team profiles, the media library, taxonomies and site-wide search.'
-  description: 'Scimar publishes scimar.ca on WordPress, which exposes the WordPress REST API at https://scimar.ca/wp-json/. The wp/v2 namespace is anonymously readable and returns the company''s news stories, Science & Products and About pages, media library, categories, tags, taxonomies, content-type discovery and a site-wide search endpoint as JSON.
-
-
-    This document was DERIVED mechanically by API Evangelist from the route-discovery document served at https://scimar.ca/wp-json/ on 2026-08-26 — every path, method and parameter below is taken verbatim from that descriptor. Scimar does not publish an OpenAPI definition of its own, and this is not a product API: it is the content API the CMS exposes. Write operations exist on these routes but require authentication (WordPress Application Passwords over HTTP Basic); anonymous GET /wp/v2/settings returns 401 and GET /wp/v2/users 302-redirects.'
+  description: Scimar publishes scimar.ca on WordPress, which exposes the WordPress REST API at https://scimar.ca/wp-json/.
   contact:
     name: Scimar
     url: https://scimar.ca/about/contact/
@@ -340,6 +337,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/WpError'
+    BadRequest:
+      description: Invalid parameter (rest_invalid_param).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WpError'
     NotFound:
       description: No route or resource matched (rest_no_route / rest_post_invalid_id).
       content:
@@ -348,12 +351,6 @@ components:
             $ref: '#/components/schemas/WpError'
     Forbidden:
       description: Authenticated but not permitted (rest_cannot_view / rest_forbidden).
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/WpError'
-    BadRequest:
-      description: Invalid parameter (rest_invalid_param).
       content:
         application/json:
           schema:
