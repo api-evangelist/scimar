@@ -104,152 +104,23 @@ apis:
     url: scopes/scimar-scopes.yml
   - type: WellKnown
     url: well-known/scimar-well-known.yml
-- aid: scimar:scimar-comments-api
-  name: Scimar Comments API
-  description: The Comments API from Scimar — 2 operation(s) for comments.
-  humanURL: https://scimar.ca/news/
+  x-surface: platform-generated
+  x-platform: wordpress
+  x-platform-surface: mcp-plugin
+- aid: scimar:scimar-ca-website-wordpress-rest
+  name: Scimar Website (WordPress REST)
+  description: 'The public WordPress REST API (wp-json) of the Scimar website at scimar.ca: the route
+    index of the site''s content management system, catalogued as one site surface rather than as separate
+    APIs.'
   baseURL: https://scimar.ca/wp-json
   tags:
-  - Comments
+  - WordPress
+  x-surface: platform-generated
   properties:
-  - type: OpenAPI
-    url: openapi/scimar-comments-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-discovery-api
-  name: Scimar Discovery API
-  description: The Discovery API from Scimar — 4 operation(s) for discovery.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Discovery
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-discovery-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-media-api
-  name: Scimar Media API
-  description: The Media API from Scimar — 4 operation(s) for media.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Media
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-media-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-pages-api
-  name: Scimar Pages API
-  description: The Pages API from Scimar — 6 operation(s) for pages.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Pages
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-pages-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-posts-api
-  name: Scimar Posts API
-  description: The Posts API from Scimar — 6 operation(s) for posts.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Posts
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-posts-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-search-api
-  name: Scimar Search API
-  description: The Search API from Scimar — 1 operation(s) for search.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Search
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-search-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-settings-api
-  name: Scimar Settings API
-  description: The Settings API from Scimar — 1 operation(s) for settings.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Settings
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-settings-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-taxonomy-api
-  name: Scimar Taxonomy API
-  description: The Taxonomy API from Scimar — 6 operation(s) for taxonomy.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - Taxonomy
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-taxonomy-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
-- aid: scimar:scimar-users-api
-  name: Scimar Users API
-  description: The Users API from Scimar — 6 operation(s) for users.
-  humanURL: https://scimar.ca/news/
-  baseURL: https://scimar.ca/wp-json
-  tags:
-  - User
-  tags_raw:
-  - Users
-  properties:
-  - type: OpenAPI
-    url: openapi/scimar-users-api-openapi.yml
-  - type: DataModel
-    url: data-model/scimar-data-model.yml
-  - type: ErrorCatalog
-    url: errors/scimar-problem-types.yml
-  - type: Conventions
-    url: conventions/scimar-conventions.yml
+  - type: Documentation
+    url: https://scimar.ca/wp-json
+  x-platform: wordpress
+  x-platform-surface: rest
 x-enrichment:
   date: '2026-08-26'
   status: enriched
