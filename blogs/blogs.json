@@ -9,11 +9,11 @@
       "method": "discovered"
     },
     {
-      "source": "https://scimar.ca/about/",
-      "feed_url": "https://scimar.ca/about/feed/",
+      "source": "https://scimar.ca/feed/",
+      "feed_url": "https://scimar.ca/feed/",
       "title": "",
       "saved": 0,
-      "method": "discovered"
+      "method": "feed"
     },
     {
       "source": "https://scimar.ca/news/feed/",
@@ -31,5 +31,5 @@
     }
   ],
   "post_count": 9,
-  "fetched": "2026-10-03T12:30:02Z"
+  "fetched": "2026-10-10T13:15:00Z"
 }
